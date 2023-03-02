@@ -10,7 +10,8 @@ import os
 def get_inverse_coverage(image):
     notcovered = 0
     for pixel in image:
-        if pixel > 4000:
+        # We clamp white at 1500, so let's assume 3000 is not covered
+        if pixel > 3000:
             notcovered = notcovered + 1
 
     return notcovered
@@ -55,6 +56,11 @@ def main(args):
 
     remove_border(raw_img, width, height)
     remove_border(bg_img, width, height)
+
+    hist = get_histogram(raw_img)
+    # There is really no values [0:15] in scanned image, so it's all border
+    hist[0] = hist[0] - width * 2 - height * 2 + 4
+    print("Raw image histogram: %s" % hist)
 
     subtracted = []
     total = width * height - width * 2 - height * 2 + 4
